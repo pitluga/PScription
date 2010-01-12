@@ -1,6 +1,7 @@
-* do a bunch of documentation
+* do a bunch of documentation with the xml format
 * flush out some more assertions
-
+* publish a zip file on codeplex
 
 * format errors better (like existing powershell errors) find that code somewhere
-
+* ensure the return code is correct
+* test PScription with PScription (must before 1.0)
