@@ -15,9 +15,13 @@ function Create-Context([string]$contextName) {
         param($aggregator)
         foreach($currentTest in $this.Tests) {
             try {
-                . $this.SetUpScript
-                . $currentTest.TestScript
-                . $this.TearDownScript
+                try {
+                    . $this.SetUpScript
+                    . $currentTest.TestScript
+                }
+                finally {
+                    . $this.TearDownScript
+                }
                 $aggregator.ReportSuccess($this.Name)
             }
             catch [PScription.AssertionFailedException] {
