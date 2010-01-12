@@ -25,8 +25,17 @@ function Create-ResultAggregator {
     $aggregator | Add-Member -MemberType ScriptMethod -Name Completed -Value {
         Write-Host ""
         Write-Host "Total Tests:" ($this.SuccessCount + $this.ErrorCount + $this.FailureCount) "Failed:" $this.FailureCount " Errors:" $this.ErrorCount
-        $this.Failures | % { Write-Host "FAILED:" $_.name -Fore Red ; Write-Host "`t" $_.exception -Fore Red }
-        $this.Errors | % { Write-Host "ERRORS:" $_.name -Fore Magenta ; Write-Host "`t" $_.exception -Fore Magenta }
+        
+        foreach ($failedTest in $this.Failures) {
+            Write-Host -Fore Red "FAILED:" $failedTest.name
+            Write-Host -Fore Red "`t" $failedTest.exception 
+        }
+        
+        foreach ($erroredTest in $this.Errors) {
+            Write-Host -Fore Magenta "ERRORS:" $erroredTest.name
+            Write-Host -Fore Magenta "`t" $erroredTest.exception
+             
+        }
     }
     return $aggregator
 }

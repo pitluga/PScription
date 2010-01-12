@@ -1,58 +1,3 @@
-
-Add-Type @"
-using System;
-namespace PScription 
-{
-    public class AssertionFailedException : Exception 
-    { 
-        public AssertionFailedException (string msg) : base(msg) { } 
-    }
-}
-"@
-
-function Assert-Equal($expected, $actual, [string]$message = "") {
-    Assert-True ($expected -eq $actual) "Expected [$expected] but was [$actual] `n$message"
-}
-
-function Assert-True([boolean]$actual, [string]$message) {
-    if (-not $actual) {
-        throw (New-Object PScription.AssertionFailedException -arg $message)
-    }
-}
-
-function Create-ResultAggregator {
-    $aggregator = New-Object PSObject
-    $aggregator | Add-Member -MemberType NoteProperty -Name SuccessCount -Value 0
-    $aggregator | Add-Member -MemberType NoteProperty -Name ErrorCount -Value 0
-    $aggregator | Add-Member -MemberType NoteProperty -Name Errors -Value @()
-    $aggregator | Add-Member -MemberType NoteProperty -Name FailureCount -Value 0
-    $aggregator | Add-Member -MemberType NoteProperty -Name Failures -Value @()
-    $aggregator | Add-Member -MemberType ScriptMethod -Name ReportError -Value {
-        param($name, $exception)
-        $this.Errors += @{ name=$name; exception=$exception }
-        $this.ErrorCount += 1
-        Write-Host "E" -NoNewLine -Fore Magenta
-    }
-    $aggregator | Add-Member -MemberType ScriptMethod -Name ReportFailure -Value {
-        param($name, $exception)
-        $this.Failures += @{ name=$name; exception=$exception }
-        $this.FailureCount += 1
-        Write-Host "F" -NoNewLine -Fore Red
-    }
-    $aggregator | Add-Member -MemberType ScriptMethod -Name ReportSuccess -Value {
-        param($name)
-        $this.SuccessCount += 1
-        Write-Host "." -NoNewLine -Fore Green
-    }
-    $aggregator | Add-Member -MemberType ScriptMethod -Name Completed -Value {
-        Write-Host ""
-        Write-Host "Total Tests:" ($this.SuccessCount + $this.ErrorCount + $this.FailureCount) "Failed:" $this.FailureCount " Errors:" $this.ErrorCount
-        $this.Failures | % { Write-Host "FAILED:" $_.name -Fore Red ; Write-Host "`t" $_.exception -Fore Red }
-        $this.Errors | % { Write-Host "ERRORS:" $_.name -Fore Magenta ; Write-Host "`t" $_.exception -Fore Magenta }
-    }
-    return $aggregator
-}
-
 function Create-Test([string]$name, [scriptblock]$testDefinition) {
     $test = New-Object PSObject
     $test | Add-Member -MemberType NoteProperty -Name Name -Value $name
@@ -68,8 +13,7 @@ function Create-Context([string]$contextName) {
     $context | Add-Member -MemberType NoteProperty -Name Tests -Value @()
     $context | Add-Member -MemberType ScriptMethod -Name Execute -Value { 
         param($aggregator)
-        $this.Tests | % {
-            $currentTest = $_
+        foreach($currentTest in $this.Tests) {
             try {
                 . $this.SetUpScript
                 . $currentTest.TestScript
@@ -124,14 +68,3 @@ function Context([string]$contextName, [scriptblock]$contextDefinition) {
     $script:tests += $context
 }
 
-function Invoke-Tests([string] $directory) {
-    $testFiles = (Get-ChildItem -Path $directory -Recurse)
-
-    $script:tests = @()
-    foreach ( $testFile in $testFiles ) {
-      . $testFile.FullName
-    }
-    $aggregator = Create-ResultAggregator
-    $script:tests | % { $_.Execute($aggregator) }
-    $aggregator.Completed()
-}
