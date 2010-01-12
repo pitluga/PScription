@@ -66,7 +66,7 @@ FormatsToProcess = @()
 NestedModules = 'Runner.ps1', 'Assertions.ps1', 'Context.ps1', 'Aggregator.ps1'
 
 # Functions to export from this module
-FunctionsToExport = 'Context,Test,Invoke-Tests'
+FunctionsToExport = 'Context' ,'Test', 'Invoke-Tests'
 
 # Cmdlets to export from this module
 CmdletsToExport = ''
@@ -81,7 +81,7 @@ AliasesToExport = ''
 ModuleList = @()
 
 # List of all files packaged with this module
-FileList = @()
+FileList = @('Runner.ps1', 'Assertions.ps1', 'Context.ps1', 'Aggregator.ps1', 'PScription.psd1')
 
 # Private data to pass to the module specified in ModuleToProcess
 PrivateData = ''

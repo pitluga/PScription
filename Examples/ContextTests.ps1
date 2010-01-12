@@ -1,14 +1,14 @@
-Context "Within a context" {
+Context "context" {
 
     SetUp {
         $setThis = "in Setup"
     }
 
-    Test "that tests run" {
+    Should "run tests" {
         Assert-True $true "true was true, whew!"
     }
 
-    Test "that setup should run before" {
+    Should "run setup before the tests" {
         Assert-Equal "in Setup" $setThis
     }
     
@@ -21,7 +21,7 @@ Context "TearDown" {
         $variable = "Value"
     }
     
-    Test "has access to the setup variables" {}
+    Should "run teardown after the test" {}
 
     TearDown {
         Assert-Equal "Value" $variable

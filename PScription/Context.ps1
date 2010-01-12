@@ -60,8 +60,8 @@ function Context([string]$contextName, [scriptblock]$contextDefinition) {
         $context.SetUpScript = $setup
     }
     
-    function Test([string]$name, [scriptblock]$testDefinition) {
-        $context.Tests += Create-Test "$contextName Test $name" $testDefinition
+    function Should([string]$name, [scriptblock]$testDefinition) {
+        $context.Tests += Create-Test "$contextName should $name" $testDefinition
     }
     
     function TearDown([scriptblock]$teardown) {
