@@ -66,7 +66,7 @@ FormatsToProcess = @()
 NestedModules = 'Runner.ps1', 'Assertions.ps1', 'Context.ps1', 'Aggregator.ps1'
 
 # Functions to export from this module
-FunctionsToExport = 'Context' ,'Test', 'Invoke-Tests'
+FunctionsToExport = 'New-RxContext' ,'New-RxTest', 'Invoke-RxTests'
 
 # Cmdlets to export from this module
 CmdletsToExport = ''
@@ -75,7 +75,7 @@ CmdletsToExport = ''
 VariablesToExport = ''
 
 # Aliases to export from this module
-AliasesToExport = ''
+AliasesToExport = 'Context', 'Test'
 
 # List of all modules packaged with this module
 ModuleList = @()

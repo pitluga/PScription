@@ -1,3 +1,3 @@
 Import-Module .\PScription
 
-Invoke-Tests "./Examples"
+Invoke-RxTests "./Examples" -Verbose

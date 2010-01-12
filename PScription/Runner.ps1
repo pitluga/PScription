@@ -1,4 +1,4 @@
-function Invoke-Tests([string] $directory) {
+function Invoke-RxTests([string] $directory) {
     $testFiles = (Get-ChildItem -Path $directory -Recurse)
 
     $script:tests = @()

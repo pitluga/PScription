@@ -1,11 +1,11 @@
-function Create-Test([string]$name, [scriptblock]$testDefinition) {
+function Create-TestObject([string]$name, [scriptblock]$testDefinition) {
     $test = New-Object PSObject
     $test | Add-Member -MemberType NoteProperty -Name Name -Value $name
     $test | Add-Member -MemberType NoteProperty -Name TestScript -Value $testDefinition
     return $test
 }
 
-function Create-Context([string]$contextName) {
+function Create-ContextObject([string]$contextName) {
     $context = New-Object PSObject
     $context | Add-Member -MemberType NoteProperty -Name Name -Value $contextName
     $context | Add-Member -MemberType NoteProperty -Name SetUpScript -Value {}
@@ -35,8 +35,8 @@ function Create-Context([string]$contextName) {
     return $context
 }
 
-function Test([string]$name, [scriptblock]$testDefinition) {
-    $test = Create-Test $name $testDefinition
+function New-RxTest([string]$name, [scriptblock]$testDefinition) {
+    $test = Create-TestObject $name $testDefinition
     $test | Add-Member -MemberType ScriptMethod -Name Execute -Value { 
         param($aggregator)
         try {
@@ -52,16 +52,17 @@ function Test([string]$name, [scriptblock]$testDefinition) {
     }
     $script:tests += $test
 }
+New-Alias Test New-RxTest
 
-function Context([string]$contextName, [scriptblock]$contextDefinition) {
-    $context = Create-Context $contextName
+function New-RxContext([string]$contextName, [scriptblock]$contextDefinition) {
+    $context = Create-ContextObject $contextName
     
     function SetUp([scriptblock]$setup) {
         $context.SetUpScript = $setup
     }
     
     function Should([string]$name, [scriptblock]$testDefinition) {
-        $context.Tests += Create-Test "$contextName should $name" $testDefinition
+        $context.Tests += Create-TestObject "$contextName should $name" $testDefinition
     }
     
     function TearDown([scriptblock]$teardown) {
@@ -71,4 +72,4 @@ function Context([string]$contextName, [scriptblock]$contextDefinition) {
     &$contextDefinition
     $script:tests += $context
 }
-
+New-Alias Context New-RxContext
